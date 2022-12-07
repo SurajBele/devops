@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('pull') {
             steps {
-                echo 'pulling..'
+                git 'https://github.com/SurajBele/seedjobs.git'
             }
         }
         stage('Build') {
