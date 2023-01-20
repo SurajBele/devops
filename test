@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('pull') {
+            steps {
+                git 'https://github.com/SurajBele/time-tracker.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo "Test sucessful"     
+             }
+        }
+        stage('QualityCheck') {
+            steps {
+                echo "QualityCheck sucessful"
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo "deployment sucessful"
+            }
+        }
+    }
+}
