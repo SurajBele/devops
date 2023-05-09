@@ -1,0 +1,97 @@
+===================================================================
+Deploy student app on tomcat on ec2 instance using terraform 
+=================================================================
+
+
+===========================================================
+Main File------main.tf
+===========================================================
+resource "aws_instance" "tom-student-sg" {
+  ami           =  var.ami_id # ap-south-1
+    user_data = <<EOF
+  #! /bin/bash
+  echo "*** Installing tomcat"
+  sudo yum update -y
+  sudo yum install java-1.8.0-openjdk.x86_64 -y
+  sudo curl -O https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.85/bin/apache-tomcat-8.5.85.zip
+  unzip apache-tomcat-8.5.85.zip
+  cd apache-tomcat-8.5.85 
+  sudo chmod 500 /apache-tomcat-8.5.85/bin/catalina.sh
+  cd webapps
+  sudo curl -O https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
+  sudo /apache-tomcat-8.5.85/bin/catalina.sh start
+  echo "*** Completed Installing tomcat"
+  EOF
+  availability_zone = "ap-south-1b"
+  instance_type = "t2.micro"
+  security_groups = [ "tom-sg" ]
+  key_name   = "my-key"
+    tags = {
+    Name = "tf-tom-sg"
+  }
+}
+resource "aws_security_group" "tom-sg" {
+  name        = "tom-sg"
+  description = "Allow inbound traffic"
+
+  ingress {
+    description      = "tom-sg"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+   ingress {
+    description      = "tom-sg"
+    from_port        = 8080
+    to_port          = 8080
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+    ingress {
+    description      = "tom-sg"
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "tom-sg"
+  }
+}
+
+====================================================
+variable file-----variable.tf
+====================================================
+
+provider "aws" {
+    region = "ap-south-1"  
+}
+
+variable "ami_id" {
+  default = "ami-0e742cca61fb65051"
+}
+
+resource "aws_key_pair" "my-key" {
+  key_name   = "my-key"
+  public_key = "insert your ssh publice key here"
+}
+
+output "instance_ip_addr" {
+  value = aws_instance.tom-student-sg.public_ip
+}
+
+================================================================
+check using instance IP address on browser
+
+InstanceIP:8080--------------for tomcat
+InstanceIP:8080/student----------for student app
+=================================================

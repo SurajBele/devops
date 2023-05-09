@@ -1,0 +1,29 @@
+1. create a IAM ROLE with DynamoDB full accesss
+
+2. create a bucket with a globally unique name
+
+3. go to Lambda service and create a function with any name and attach existing IAM role created
+   a. go to code edit all existing code and deploy following code 
+  
+   import boto3
+from uuid import uuid4
+def lambda_handler(event, context):
+    s3 = boto3.client("s3")
+    dynamodb = boto3.resource('dynamodb')
+    for record in event['Records']:
+        bucket_name = record['s3']['bucket']['name']
+        object_key = record['s3']['object']['key']
+        size = record['s3']['object'].get('size', -1)
+        event_name = record ['eventName']
+        event_time = record['eventTime']
+        dynamoTable = dynamodb.Table('newtable')
+        dynamoTable.put_item(
+            Item={'unique': str(uuid4()), 'Bucket': bucket_name, 'Object': object_key,'Size': size, 'Event': event_name, 'EventTime': event_time})
+    
+   b. go to test and create a new sharable event
+
+   c. go to trigger attch s3 bucket created above 
+
+4. go to DynamoDB service and create a table and unique id with same name wriiten on python script above
+
+5. upload any file on s3 bucket created .. same file shown in DynamoDB table

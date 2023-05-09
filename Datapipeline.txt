@@ -1,0 +1,18 @@
+||*|| Datapipeline or DynamoDB to S3 ||*||
+
+1. all things s3, dynamodb and datapipeline must be same region also emr cheak in same region.
+
+2. create dynamodb with table and items.
+
+3. create s3 bucket in same region.
+
+4. create role ----> a. Ec2-role --> administratoraccess
+               
+                     b. Datapipeline-role --> (i) amazonEMRfullaccesspolicyv2
+                                              (ii) administartoraccess
+
+5. create datapipeline -->   (i) export data from dynamodb to s3
+                             (ii) choose bucket with specify region name
+                             (iii) apply ec2 and datapipeline role.
+
+6. cheak event and cluster in emr. when datapipeline finish data will apear in s3.

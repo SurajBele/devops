@@ -1,0 +1,59 @@
+use studentapp;
+CREATE TABLE if not exists students(student_id INT NOT NULL AUTO_INCREMENT,
+	student_name VARCHAR(100) NOT NULL,
+    student_addr VARCHAR(100) NOT NULL,
+	student_age VARCHAR(3) NOT NULL,
+	student_qual VARCHAR(20) NOT NULL,
+	student_percent VARCHAR(10) NOT NULL,
+	student_year_passed VARCHAR(10) NOT NULL,
+	PRIMARY KEY (student_id)
+);
+
+
+
+
+
+
+docker hub key:- dckr_pat_vSOodJwQO1n73ILt3OHzSPYyKEU
+
+ root pass :- /oe2;A8%S,:=GwJ+9q9VIJj7b024Xz&Q
+
+
+
+sudo curl -O https://s3-us-west-2.amazonaws.com/studentapi-cit
+
+
+add in contex.xml
+
+<<Resource  name="jdbc/studentapp" auth="Container" type="javax.sql.DataSource"
+         username="admin"
+         password="admin123"
+         driverClassName="com.mysql.jdbc.Driver"
+         url="jdbc:mysql://database-1.ckhnky6it95w.ap-south-1.rds.amazonaws.com:3306/confluence?useUnicode=true&amp;characterEncoding=utf8" Uncomment this to disable session persistence across Tomcat restarts -->
+
+
+
+
+
+<Resource name="jdbc/studentapp" auth="Container" type="javax.sql.DataSource"
+         username="admin"
+         password="admin123"
+         driverClassName="com.mysql.jdbc.Driver"
+         url="jdbc:mysql//database-1.ckhnky6it95w.ap-south-1.rds.amazonaws.com:3306/confluence?useUnicode=true&amp;characterEncoding=utf8"
+         maxTotal="500"
+         maxIdle="30"
+         maxWaitMillis="1000"
+         defaultTransactionIsolation="READ_COMMITTED"
+         validationQuery="Select 1" />
+
+
+
+
+<Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource"
+           maxTotal="500" maxIdle="30" maxWaitMillis="1000"
+           username="mydblogin" password="mydbpassword" driverClassName="com.mysql.jdbc.Driver"
+           url="jdbc:mysql://RDS database endpoint:3306/mysql database name?useUnicode=yes&amp;characterEncoding=utf8"/>
+
+
+
+
