@@ -126,6 +126,7 @@ ADD https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.88/bin/apache-tomcat-8.5.88.ta
 RUN tar -xzf ./apache-tomcat-8.5.88.tar.gz -C /opt
 WORKDIR /opt/apache-tomcat-8.5.88/
 RUN ls /opt/apache-tomcat-8.5.88/
+COPY student.war /opt/apache-tomcat-8.5.88/webapps
 CMD ["/opt/apache-tomcat-8.5.88/bin/catalina.sh", "run"]
 ENTRYPOINT ["/opt/apache-tomcat-8.5.88/bin/catalina.sh", "run"]
 
@@ -152,6 +153,19 @@ services:
 
 
 --------------------------------------------------------
+
+
+
+docker pull surajbele/students:tom_studentapp
+
+--------------------------------------------------------
+to install stress in centos7
+=====================================================
+
+yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+yum install stress
+
+============================================================================
 
 
 
