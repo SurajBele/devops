@@ -1,0 +1,984 @@
+`====================================LINUX=================================
+
+=======================================
+
+user administration
+-------------------------------
+
+#useradd
+#adduser
+--------------------------------
+affected files
+--------------
+
+UID---user ID
+GID- group ID
+/etc/skel-  skeleten file, 
+/var/spool/mail- mails 
+/etc/passwd---user related data
+/etc/shadow---users password related data
+/etc/group-----group related info
+/etc/gshadow----groups passwd related info
+/home/username---user home dir
+
+--------------------------------------------------------
+
+/etc/shadow---- users passwd related data
+username:encypt apsswd:last pass changes from 1 jan 1970:min days: max days:worning days:inactive day:expire days: future used
+
+/etc/passwd----user related info
+username:X:UID: GID: comment: /home directory:login shell
+
+root user UID-- 0
+sys users UIDs ---1-999
+local users UID- 1000 above
+
+-----------------------------------
+
+/etc/skel-------------user profile related file
+initialy store in users home directory when user created.
+
+what if we delete profile files from users home directory.
+------------------------------------
+
+password policies
+=============================
+
+passwd- to change passwd
+------
+passwd (user name)
+
+
+---------------------
+---/etc/shadow----
+------------------------------
+chage (option)(username) 
+-l -listing 
+-m -min days for password change
+-M -max days for password change 
+I  -inactive- access after passwd expired
+-E -expiry fo account
+-W -worning befor passowrd expired
+-d -last 
+----------------------------------------------
+
+--------/etc/passwd----
+------------------------------------
+useradd (option ) username-----
+all this options -use at the time of user creation
+-u   - UID
+-g  ---GID
+-c  ---comment
+-d ---user dir /home/username- /tmp/username
+-s ---login shell
+-e ---expiry date
+-G ---group name
+---------------------------------------
+userdel (option) username ---- it delete only user
+-r -----this option will delete all user related files
+--------------------------------------------------
+usermod---- existing user
+-----------------------------------------
+all this options -use for existing user
+-u   - UID
+-g  ---GID
+-c  ---comment
+-d ---user dir /home/username- /tmp/username
+-s ---login shell
+-e ---expiry date
+-G ---group name
+-L --- password lock
+-U ---unlock password
+-----------------------------
+-----/etc/group-----
+
+groupname:passwd link:GID:list of members---->4 feild
+
+-----/etc/gshadow-----
+
+groupname:encrypted passwd:admin of group:list of members-->
+
+--------------------------------------------------------------- 
+
+groupadd------------creating group
+
+groupadd (option)(groupname)
+
+-g ---GID
+---------------------------------------------
+
+gpasswd---to set group password
+gpasswd----user adding in group, delete, admin adding
+
+-a---- addning single user
+-d  ---delete user
+-M ---- adding multple users
+-A ---- adding admin in group
+-A ''---remove admin from group
+-------------------------------------------------
+
+groupmod---- to modify existing group
+
+groupmod (option) (newname) (existing group name)
+-n -------rename group
+--------------------------------------------
+
+groupdel groupname
+---------------------------------------------------
+
+pwunconv--------------------to hide shadow file
+
+pwconv---------------to unhide shadow file
+
+---------------------------------------------------
+
+grpunconv------------------to hide gshadow file
+
+grpconv-------------------to unhide gshadow file
+
+-------------------------------------------------------------------------
+====================================================================
+
+alias -commond
+
+	use to assign nick name or alternative name or short form
+
+ alias  ------ it shows or list all exsting alias or nick names
+ alias -p-------list all exsting alias or nick names
+
+ alias (nickname)=(commandname)-------------temporary perpose
+
+unalias (nickname) -------------it will remove single nick name
+
+unalias -a --------------------it will remove all existing alias 0r nick name
+
+-----------------------------------------------
+
+~/.bashrc -------------------  edit this for assigning permonent alias
+
+===========================================================================
+
+--------------------file system security-----------------------
+
+1-file types
+2- permission mode
+3-link count
+4-ownership
+
+this fields are created when we create file or dir
+5-size
+6-date & time
+7-name of file or directory
+
+------------------------------------------------------------------
+
+field of file
+file types. ugo permissions, (.ACL) ,link count.owner user, owner group,size.date, time, file name.--9field
+-----------------------------------------------------------------
+1- File types
+
+**user define files**
+
+1-normal file (-) 
+2- directory  (d)
+3- link files (l)
+
+
+**system define files**
+
+4- block device files - (b)
+5- charector device file - (c)
+6- socket file (s)
+7- pipe file  (p)
+
+ll /dev
+------------------------------------------------------
+------link count-
+
+defoult file link count -1 - hard or soft link will increase count by 1
+defoult dir link count --2--parent dir/dir2/dir3-increace by 1
+-----------------------------------------------------
+
+Hard link					Soft link
+------------
+ln (filename)(hardlink name)		ln -s (main filename)(softlinkfile)
+
+replicate complite data from existing		link to main file
+normal file (-)					link file (l)
+if we delete main still we have hardlink	if we delete main file then 
+file						soft link is useless										
+we can not creat hardlink of dir	we can create softlink of dir &file
+
+inode of hard is same				inode is different
+inode is your metadata or unique ID			
+ 
+=================================================================
+
+ownership--
+
+chown--- to chage ower user or group
+
+chown (user):(group) filename
+
+chown (user) (filename)
+
+chown :(groupname) (filename)
+
+chgrp (groupname) (filename)
+-=======================================================================
+
+wc-- 
+ wc (filename)-	it will show you count of lines , word, charectors , filename
+
+---------------------------------------------------------
+
+tee ---- it will show data on terminal and also save in new file.
+
+(command) | tee -a (filename)-----------it will show and save data in file
+(command) | tee (filename)-------------it will show only
+
+-----------------------------------------------------
+man cal ->|->tail->output
+
+--------------------------------------------------
+
+
+ permission mode
+---------------------------------
+read- r  write -w execute-x
+---------------------------------
+
+permission on file-working style
+
+r --read---cat,tail,head,less,more etc ----------read-> write
+
+w--write ---create, edit delete,touch, etc,  
+
+x-execute---script, commands, .exe etc
+
+----------------------------------
+
+permissions on dir - working style
+
+r--read --- ls, dir, echo 434/*,vim /dev
+
+w-write - --create,delete- mkdir rmdir
+
+x-execute--cd --------
+
+---------------------------------------------------------------
+	7	7	7
+	421	421	421
+	rwx	rwx	rwx
+	|	|	|
+	user	group	other
+
+
+r -read 		4
+
+w - write		2
+
+x-execute		1
+----------------------------------------
+rwx
+111 --fully active---7
+
+ooo--fully down
+
+
+binary to octal
+1*2^2+ 1*2^1 + 1*2^0
+4+2+1=7
+	5	3	6
+	4 1	 21	42
+	r-x	-wx	rw-
+	101
+-----------------------------------------------
+
+Default permissions 
+-----------------------------
+	rw-r--r--
+	644-------default permission of file
+	
+	(rwx)(r-x)(r-x)
+	7     5	   5
+	755-----------------default permission of directory
+	
+-------------------------------------------------------------
+full permission
+----------------------
+	777---- full permission of directory
+
+	666------full permission of file
+
+----------------------------------------------
+
+root umask --- command
+	
+	default 	full permission
+root	644		666
+
+umask---it use to default permission, when we create file or dir
+
+	default permission is depends on umask
+
+root - umask 022	-default umask of root
+
+	default = full permission - umask
+	
+	644=666-022
+--------------------------------------------------------
+for changing umask
+
+	umask (value)
+	
+	umask 044
+	
+	666-044
+	622-- 	set default permission files
+	777-044
+	733----	set default permission dir
+
+-----------------------------------------------------
+
+local user 
+
+umask--002
+
+full permission
+----------------------
+	777---- full permission of directory
+
+	666------full permission of file
+
+	default = full permission - umask
+
+default permission-
+
+	775-------default for dir
+	
+	664-------default for file
+---------------------------------------------------
+
+for permenent 
+
+vim /etc/profile
+---------------------------------------------------
+============================================================
+changing permission
+----------------------------
+chmod - command
+			(rwx)
+chmod (ugo)(=+-)(permissions carector form )(filename or dir)
+
+	+ ---- to add permissions
+	- ----to remove permissions
+	=-----to replace permissions
+
+	chmod u+rwx filename
+	chmod u+rwx dir
+
+	for dir
+	chmod -R (permission in numuric form)(file name or dir)
+			(777)
+	-R --recursive --permission applied on all dir inside parent dir 
+
+-----------------------------------------------------------
+Special permissions
+-----------------------------------------------
+SUID- super UID
+
+SUID --- apply on executable file, commands.
+
+all users can access that file or commanads 
+
+chmod u+s us/sbin/dmidecode , shutdown
+
+rws-rw-rw
+u   g   o
+rwS-rw-rw
+
+s----with executable access permission
+
+S--without executable access permission
+-------------------------------------------------------
+SGID
+
+all groups can access the perticular dir
+
+chmod g+s /(directory name)
+rwx rws rwx
+u    g   o
+
+s----with executable access permission
+
+S--without executable access permission
+------------------------------------------------------------
+-----------------------------------------------------------
+ACL for sepcific user
+-----------------------------
+
+it is used to provide specific permission to specific user for perticular dir or file
+
+getfacl ------- it will show all applied ACL- 
+
+getfacl (file or dir) ---to check status 
+
+------
+			    rwx
+setfacl -m u:(username):(permisssion)(file or dir)---to attach acl on 
+user
+				 r--
+setfacl -x g:(groupname):(permisssion)(file or dir)
+
+setfacl -x u:(username):(permisssion)(file or dir) ---to remove acl
+
+
+setfacl -b /(file or dir)---it remove all applied acl
+
+==============================================================
+
+SUDO user---super user do
+--------------------------------------------------
+
+vim /etc/sudoers
+
+
+edit /etc/sudoers - to set sudo user
+
+
+1 - Allow root to run any commands anywhere -password required
+	root ALL ALL=(ALL) ALL
+	amit ALL ALL=(ALL) /sbin/dmidecode
+
+2--Same thing without a password
+	%wheel        ALL=(ALL)       NOPASSWD: ALL
+	amit		ALL=(ALL)       NOPASSWD: ALL 
+
+3-Allows people in group wheel to run all commands
+
+	add user amit in the wheel group
+	%wheel  ALL=(ALL)       /sbin/dmidecode
+
+-=====================================================================
+
+filter & search utilities
+----------------------------------------------
+grep -- - to search words in the file
+		------		---
+grep (option)(word) /(filename)
+
+grep "work" /file1------ it search the carectors
+
+grep -i --it ignore case sensitivity
+grep -c -- it gives a count of words where word is presenint the file
+grep- E -- it used to search 2 words at a time
+grep -n  --it indicate the line no.
+grep -w -- it user to search complete word
+
+---------------------------------------------------
+locate-   it search path of file
+
+locate /filename
+
+------------------------------------------------
+sort----- sorting in alphabetical order
+
+sort /filename-- asending order
+sort -r /filename desending order
+-----------------------------------------------------
+
+uniq----remove duplicate lines
+
+uniq /filename
+
+-------------------------------------
+find-----to find related list of files based on conditions
+
+find (path)(options)(parameters)
+
+find / -name amit
+
+options 
+-name ---to find files with name
+-user----to find files related to the user 
+-type--(-), d
+
+-exec---it goes to the actual path to copy in backup dir
+	it allows to run onther command
+	automate the process
+
+find / -user amit -exec cp -aprvf '{}' /backup \;
+
+		-a upend
+		-p preserve
+
+finding the files  transfered to cp command
+-----------------------------------------------------------------
+AWK- aho weinberger kernighan-----AT &T bell lab ---1977
+
+used for prgramming and scripting
+used by programmer or devloper to write a in short forms and affective way.
+
+awk allows to use numeric functions, variables, string functions, logical operations,
+
+awk use cases:- 
+
+scan a file line by line, campaire, split, perform an action 
+
+Syntax:- AWK (options) '(selection criteria) {action}' filename 
+
+	ajay 	is 	a 	student
+	$1	$2	$3	$4
+
+#awk '{print $3, $4}' /etc/passwd
+
+#awk '/ajay/ {print $1}' /etc/passwd
+
+#awk '/student/ {print}' /etc/passwd
+
+#gawk -F: '{ print $6 }' /etc/passwd
+
+awk -F: '/suraj/ { print $3 }' /etc/passwd
+
+awk '{print NR , $3} /etc/passwd
+
+awk 'NR==6 {print NR, $0}' /etc/passwd
+
+awk 'NR==3, NR==6 {print NR, $0}' /etc/passwd
+
+------------------------------------------------------------------------
+===================================================================
+Archiving & compression
+------------------------------------------------------------------
+
+archive---
+	multiple file or directories combining in single directories 
+
+tar  	--	to create archive
+
+	tar (option)(newfile).tar (sourcefile)
+
+	-c ---to create archive
+	-f ---filename compulasary option
+	-v ---verbose
+	-t ---to list file content of tar file
+	-x ---extract the tar file
+	-C ---to assign path to extract
+
+du -sh (filename or dir) --- to check size
+
+compression---------------
+
+gzip	.gz	(z)
+bzip2	.bz2	(j)
+xzip	.xz	(J)
+
+archive + compression
+
+tar (option)(newfile).tar (sourcefile)
+	-c ---to create archive
+	-f ---filename compulasary option
+	-v ---verbose
+	-t ---to list filecontent of tar file
+	-x ---extract the tar file
+	-C ---to assign path to extract
+-----------------------------------------------------------
+if you already have tar file or archive file then user seperate tools 
+gzip
+bzip2
+xz
+
+gzip file.tar 
+
+gunzip file.tar.gz
+
+bzip2 file.tar
+
+bunzip file.tar.bz2
+
+xz file.tar
+
+unxz file.tar.xz
+
+-----------------------------------------------------
+
+scheduling
+----------------------------------------
+non periodic 
+
+at -- single time execution on time or date 
+
+at "time or date"
+>mkdir shedule
+>touch file123
+-----------------------------------------------------------
+periodic 
+
+crontab-- repeting task on perticular time or date or months or years
+anacron - desktop servers
+
+------------------------------
+Crontab- 
+
+vim /etc/crontab
+
+min 	hours  	daysofmonths	months	weekdays   /usr/bin/mkdir /root/dir2
+0-59	0-23	1-31		1-12	 0-6 
+				jan,feb 0 or 7 -sunday
+					sun- mon
+----------------------------------------------------------------------
+
+
+contab -e
+
+min 	hours  	daysofmonths	months	weekdays	 usr/bin/mkdir /root/dir2
+0	0	15 		aug	*		
+
+
+#task--->create an directory on monday 11am
+
+min 	hours  	daysofmonths	months	weekdays	 usr/bin/mkdir /dir2
+0	11	*		*	mon or 1
+
+*/5	*	*		*	*
+
+
+daemon service--- it is a service runs in the background and supervises the system or provide functionality to the onther processes
+
+
+systemctl restart crond ---- to restart crontab
+ systemctl enable crond ----
+ 
+   crontab -e
+
+crontab -l  	---to list sheduled crontab
+crontab -r 	----to remove cronjob 
+tail -f /var/log/cron--- to check cron logs
+contab -e -u amit ---- to set cron for specific user
+crontab -l -u amit----to list cronjob for user
+
+crontab -r -u amit--- to remove cronjobs of user.
+
+
+----------------------------------------------------------------------
+
+package management
+--------------------
+
+its depends on 2 families 
+
+1- redhat family---1-low level tool==> rpm -redhat package management
+		---2-higy level tool==> yum- yellowdog updater management
+
+2- debian family --1-low level tool   dbpkg--debian package
+		  2-higy level tool   --apt-- advanced packaging tool
+
+download-- wget (url)
+	-- curl -O (url)
+
+rpm -qa ---quary all ---shows all packages available in your system 
+rpm -q (command name)---shows package installed or not
+rpm -ivh (full package)
+	i- install
+	v- verbose
+	h- hashing -------##############100%
+
+rpm -evh (command name)----for uninstalling 
+
+rpm -qi (command name )--- detailed info 
+rpm -qip (full package name) or (url)
+rpm -ql (command name)
+tree--command	
+	
+rpm --query --all | wc -l
+1415
+dnf list installed | wc -l
+1415
+# yum list installed | wc -l
+1429
+
+
+
+-------------------------------
+Yum ---yellowdog updater management
+
+yum install httpd	- install httpd with dependences 
+			-yes
+yum remove httpd	only remove package
+
+yum list installed ---- list all packages
+
+yum autoremove httpd -----remove httpd with all dependences
+
+yum reinstall (command name)
+
+yum provides (command name)
+
+yum update---- update all bugs and fixd it.
+
+yum upgrade--- all versions of packages
+
+yumdownloader (command name)---- to download
+
+-----------------------------------------------------------------------------
+repository
+----------------
+
+1-create directory
+
+2-download multiple package in the directory
+
+3-createrepo (folder path) ----- it create metadata of that directory
+
+4-create configuration file
+
+#vim /etc/yum.repos.d/(directoryname).repo
+
+----add the following data in the configuration file
+
+[ID]
+name=local.repo
+baseurl=file://(directory path)
+enabled=1 or 0
+gpgcheck=0
+
+save it
+
+5-yum clean all ---- to update repos
+6-yum repolist all -----to see all repos
+
+
+7-then check installing packages,
+8-that packages will intall from your local repo..
+
+---------------------------------------------------------------------------
+
+partition management
+-------------------------------
+
+partition is dividing larg part into small small parts
+
+for backup data in different partitions
+
+to identify data easily
+
+
+what is file system:
+	-A file system is an organized structure of data-holding files and directories residing on storage device.
+
+every storage drive has a file system,
+----------------------------------
+
+File Systems	
+
+ext1, ext2, ext3, ext4 xfs, 
+
+--------------------------------------------------
+1- partition create
+2- allcate file system
+3- mount point
+------------------------------------------------
+lsblk-----to list partitions
+blkid----- to check file system alloted or not
+
+
+1---partition create
+
+fdisk /dev/(disk)
+m- help
+n- new partition
+p--for primary
+e- extended
+2048-default
++2G
+w---save
+
+
+allcate file system
+
+mkfs.ext4 /dev/sdb1-----to allote file system to the partition
+
+---------------------------------------------
+
+mount point
+
+mount /dev/sdb1   /(dir name) ------ to mount storage partition in dir
+
+umount /dev/sdb1  ------to unmount storage partition
+
+---------------------------------------
+delete partition
+
+
+fdisk /dev/sdb1
+m--help
+d-- to delete partition
+w---to save
+
+--------------------------------------------------------------
+
+extended partition-
+fdisk /dev/sdb
+
+
+l- logical volume
+
+----------------------------------------------------------------
+
+Logical volume management---LVM 
+=================================================
+
+fdisk -l--- to check system type
+change system type or ID of partitions
+
+fdisk /dev/sdb
+m--- help
+t- to change system ID
+8e---for linux LVM
+w--- to save
+-----------------------------------------------------
+partprobe ----- to update partition tables
+----------------------------------------------------------------
+pvcreate ---to create physical valume
+vgcreate--- to create volume group
+lvcreate-  ---to create logical volume
+
+assign file system to the logical partitions
+
+mount it to any locations
+-----------------------------------------------
+
+pvcreate /dev/sdb1 /dev/sdb3 ---- to create physical volume
+
+pvs /  pvdisplay-- to list  
+--------------------------------------------------
+vgcreate (volume group name) /dev/sdb1 /dev/sdb3 -- to create group of  physical volumes
+
+vgs / vgdisplay -- to list 
+-----------------------------------------------------------
+lvcreate -L (size of partition) -n (logical partition name) (volume group name)
+
+lvcreate -L +2700M -n lvpartition2 lv
+
+-L-- size
+-n ---name
+-------------------------------------------------------------
+
+mkfs.ext4 /dev/(volume group name)/(logical partition name)
+
+
+mount /dev/(volume group name)/(logical partition name) /(mounting path)
+
+------------------------------------------------------------
+
+to delete logical volume
+
+lvremove /dev/lv/lvpartition
+
+vgremove (volume group name)
+
+pvremove /dev/sdb1 /dev/sdb2
+
+
+lsblk---------------------------------------------------------------------
+
+vgextend---- 
+
+vgextend /dev/sdb2
+
+lvextend ---
+
+lvextend -L (size of partition) (exsiting logical partition name) (volume group name)
+
+lvreduce -L (size of partition) (exsiting logical partition name) (volume group name)
+
+------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+	
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
