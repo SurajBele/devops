@@ -1,0 +1,121 @@
+k create deployment nginx --image=nginx --dry-run=client -o yaml > deployment.yaml
+k create pod helloworld --image=helloworld --dry-run=client -o yaml > helloworld.yaml
+k expose deployment nginx --type=loadBalancer --name=lb-Balancer
+k create service LoadBalancer nginx -o yaml --dry-run=client
+
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+  
+  
+  apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nginx
+  name: nginx
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nginx
+  type: LoadBalancer
+status:
+  loadBalancer: {}
+~   
+[10:02 pm] pritam (Guest)
+    kubectl expose deployment nginx --type=LoadBalancer --port=80 --target-port=8000 --dry-run=client -o yaml > expose.yaml
+​[10:03 pm] pritam (Guest)
+    k expose -h 
+
+
+kubectl expose deployment nginx --type=LoadBalancer --port=80 --target-port=8000 --dry-run=client -o yaml > expose.yaml
+
+
+
+[10:00 pm] pritam (Guest)
+    
+
+k create deployment nginx --image=nginx --dry-run=client -o yaml > deployment.yaml
+k create pod helloworld --image=helloworld --dry-run=client -o yaml > helloworld.yaml
+k expose deployment nginx --type=loadBalancer --name=lb-Balancer
+k create service LoadBalancer nginx -o yaml --dry-run=client
+
+​[10:01 pm] pritam (Guest)
+    apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nginx
+  name: nginx
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nginx
+  type: LoadBalancer
+status:
+  loadBalancer: {​​​​​​​}​​​​​​​
+~                  
+​[10:02 pm] pritam (Guest)
+    kubectl expose deployment nginx --type=LoadBalancer --port=80 --target-port=8000 --dry-run=client -o yaml > expose.yaml
+​[10:03 pm] pritam (Guest)
+    k expose -h 
+​[10:06 pm] pritam (Guest)
+    
+
+apiVersion: v1
+kind: Service
+metadata:
+labels:
+app: nginx
+name: nginx
+annotations:
+service.beta.kubernetes.io/aws-load-balancer-type: external
+spec:
+ports:
+ - port: 80
+protocol: TCP
+targetPort: 80
+selector:
+app: nginx
+type: LoadBalancer
+status:
+loadBalancer: {​​​​​​​​}​​​​​​​​
+ 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+labels:
+app: httpd
+name: httpd
+spec:
+replicas: 1
+selector:
+matchLabels:
+app: httpd
+strategy: {​​​​​​​​}​​​​​​​​
+template:
+metadata:
+labels:
+app: httpd
+spec:
+containers:
+ - image: httpd
+name: httpd
+resources: {​​​​​​​​}​​​​​​​​
+status: {​​​​​​​​}​​​​​​​​
+

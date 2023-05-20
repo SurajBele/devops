@@ -19,7 +19,7 @@ su -i
   sudo curl -O https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.85/bin/apache-tomcat-8.5.85.zip
   unzip apache-tomcat-8.5.85.zip
   cd apache-tomcat-8.5.85
-  sudo chmod 500 /apache-tomcat-8.5.85/bin/catalina.sh
+  sudo chmod 500 /apache-tomcat-8.5.85/bin/catalina.sh start
   cd webapps
   sudo curl -O https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
   sudo /apache-tomcat-8.5.85/bin/catalina.sh start
@@ -40,6 +40,8 @@ curl -O https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
 cd ..
 cd /opt/apache-tomcat-8.5.88/lib
 curl -O https://s3-us-west-2.amazonaws.com/studentapi-cit/mysql-connector.jar
+cd bin
+./catalina.sh start
 cd ..
 cd /opt/apache-tomcat-8.5.88/conf
 vim context.xml
