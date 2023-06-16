@@ -1,0 +1,50 @@
+||*|| VPC peering , single region , cross region ,cross account ||*||
+
+ #single region 
+
+ - create 2 VPC.(each VPC= create subnet & create internet gateway ,connect IG to VPC's.)
+ - create rout table in both VPC's. associate sbnets & rout with IG.
+ - create 2 EC2 insta in both VPC's subnet with enable public IP's. with security group=SSH & all ICMP IPv4.
+
+ - go to peering connection -> create
+
+ - go to rout table -> edit rout in VPC-1----> VPC-2<public IP>   peering connection 
+                                    VPC-2----> VPC-1<public IP>   peering connection   save.
+ 
+ - go to any EC2-1 insta & -> ping <EC2-private IP>. (you can try same in EC2-2)
+   =it will work because we are in peering.
+
+|===========================================|
+|  VPC-1--->IG--->RT--->EC2-1(public sub)   |---->Region
+|                 ^                         | 
+|                 |                         |
+|                 |----->peering            |
+|                 |                         |
+|                 |                         |
+|  VPC-1--->IG--->RT--->EC2-1(public sub)   |
+|===========================================|
+
+---------------------------------------------------------------------------------------------------------------------
+#cross region
+
+ - for cross region we have to take diff VPC IP's. your IP shoud be diff & not be overlaped ans CIDR also not be same
+
+ - same as above 
+ - in peering coonection 
+   -> select onother region -> put region name -> VPC id of another region.
+ 
+ - go to rout table -> edit rout in VPC-1(region 1)----> VPC-2<public IP>   peering connection 
+                                    VPC-2(region 2)----> VPC-1<public IP>   peering connection   save.
+
+ - go to any EC2-1 insta (region 1) & -> ping <EC2-private IP(region 2)>. (you can try same in EC2-2)
+   =it will work because we are in peering.
+
+----------------------------------------------------------------------------------------------------------------------- 
+ #cross account with cross region 
+
+ - same as above
+ - select diff account ->put account ID -> select region ->put VPC id 
+ - go to rout table -> edit rout in VPC-1(account 1)----> VPC-2<public IP>   peering connection 
+                                    VPC-2(account 2)----> VPC-1<public IP>   peering connection   save.
+ - go to EC2-1 insta (account 1) & -> ping <EC2-private IP(account 2)>. (you can try same in EC2-2)
+   =it will work because we are in peering.

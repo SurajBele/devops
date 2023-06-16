@@ -1,0 +1,51 @@
+||*|| EC2 application log transfer to cloudwatch ||*||
+
+1. launch EC2 instance 
+2.create IAM role with Adminsitrative access and attach to EC2
+   the ssh of EC2 
+   # sudo update -y
+   # sudo yum install httpd -y
+   # systemctl start/enable httpd
+   # echo "<h1> hellow nagpur </h1>"| sudo tee /var/www/html/index.html
+hit public ip & see "hellow nagpur "
+   # sudo su 
+   # cd /var/log
+   # cd httpd /
+   # ls     = access_log    error_log
+   # cd 
+install awslogs
+   # yum install awslogs.norch -y
+   # systemclt start / enable awslogsd.service
+Inject (push) the ec2 logs into aws cloudwatch
+   # cd /etc/awslogs/   (ls)
+   # vim awscli.conf    (notify your region in that you present )
+----------------------------------------------------
+    [plugins]
+    cwlogs=cwlogs
+    [default]
+    region = us-east-1
+   :x
+-------------------------------------------------------
+    # vim awslogs.conf (edit the following lines /or pest directly )
+-----------------------------------------------------------------------------
+[/var/log/httpd/access_log]
+datetime_format = %b %d %H:%M:%S
+file = /var/log/httpd/access_log
+buffer_duration = 5000
+log_stream_name = httpd-{instance_id}
+initial_position = start_of_file
+log_group_name = /var/log/httpd/access_log
+
+[/var/log/httpd/error_log]
+datetime_format = %b %d %H:%M:%S
+file = /var/log/httpd/error_log
+buffer_duration = 5000
+log_stream_name = httpd-{instance_id}
+initial_position = start_of_file
+log_group_name = /var/log/httpd/error_log
+----------------------------------------------------------------------------
+  # systemclt restart awslogsd.service 
+
+3. Go to cloudwatch 
+  logs - logs group - both errors and access log shows 
+

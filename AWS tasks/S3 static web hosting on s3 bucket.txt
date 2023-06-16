@@ -1,0 +1,35 @@
+|*| STATIC WEBHOSTING ON S3 BUCKET |*|
+
+-create domain from freenom.com (or hostinger)
+
+-create S3 bucket 
+  >name = same as domain name (pratik1234.com)
+  >create index.html & error.html file and put it in bucket 
+  >make object public
+  >go to properties enable static website hosting                 ^ 
+   .name- index.html                                              |  
+          error.html                                              | instate of this 
+  [save]                                                          | you can simply
+  >permission- go to bucket polysis                               | make bucket     
+   .search sample S3 bucket polisis (on google)                   | public
+   .choos-granting readonly permission to an ananomus user        |
+   .copy script pest in bucket policy (edit policy)               ^
+
+-go to Rout53 service 
+ >DNS management- create hosted zone 
+                - write domain name (pratik1234.com)
+                - type-choose public hosted 
+
+ >go to freenome account
+  .manage domain- management tool- nameserver- use coustum name server 
+  .copy name server from rout53 to fenome account 
+   (ex.ns-856.awsdns-43.net.=remove last '.')(pest all 4 sample)
+  .save changes
+ 
+ >rout53
+  .create record set- enable Alias 
+  .rout trafic to- 1.Alise to S3 website endpoint
+                 - 2.select bucket region
+                 - 3.select S3 bucket endpont
+  .save 
+hit your website(may be it will take 2-3 hour)

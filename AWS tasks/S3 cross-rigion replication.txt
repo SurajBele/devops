@@ -1,0 +1,7 @@
+|*| S3 bucket cross-region replication |*| 
+
+- create two S3 bucket in diff region with enable versioning.
+- open source S3 (main bucket) go to management & create replication rule
+  attach destination bucket. 
+
+=============================DONE=======================================

@@ -1,0 +1,54 @@
+|*| NGINX AS A LB (load balancer) |*|              (i have perform in windows cmd mode)
+ 
+
+-create 3 EC2 instances 
+ > load balancer EC2 (1)
+ > server 1 EC2 (2)
+ > server 2 EC2 (3)
+
+-put this script in all 3 server
+
+ #!/bin/bash
+ sudo amazon-linux-extras install nginx1 -y
+ sudo systemctl start nginx
+ sudo systemctl enable nginx
+ cd /usr/share/nginx/html
+ sudo wget <https://www.free-css.com/assets/files/free-css-templates/download/page284/painter.zip>
+ sudo unzip <painter.zip>
+
+ @ 1 <free css template link>
+   2 <downloaded zip file name>
+
+-open load balancer EC2 1
+ #cd /etc/nginx/
+ #vim nginx.conf    {=write this script (clear nginx.conf file)}
+==============================================================================================
+events {
+        worker_connections 768;
+}
+
+http {
+        upstream myapp
+        {
+                server <public ipv4 DNS of server 1> weight=1;
+                server <public ipv4 DNS of server 2> weight=1;
+        }
+
+        #These are my settings SHROBON
+        server {
+                listen 80;
+                location / {
+                        proxy_pass http://myapp;
+                }
+        }
+}
+===============================================================================================
+
+( @ weight 1 =server one get 1 request as comp to server 2(get 2 req)
+  @ weight 2 =server one get 2 request as comp to server 1(get 1 req)
+  ~you can change the ratio )
+
+#:x           save
+#systemclt restart nginx 
+
+*Hit load balancer public ip

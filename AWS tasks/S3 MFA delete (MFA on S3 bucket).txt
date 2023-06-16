@@ -1,0 +1,26 @@
+||*|| MFA on S3 bucket / S3 bucket MFA delete versioning enable task ||*||
+
+  -  install AWS cli ( for opening cli we need access key & seckret acess key )
+  
+  -  create S3 bucket <acl_bucket> with ACL & Versioning enable  
+
+  -  go to cli 
+     > C:\user\pratik> aws configure
+     > Aws access key ID - public access key ID
+     > Aws secret access key - secret access key 
+     > Defaut region name - us-east-1 
+     > Default output format - json
+     
+     > C:\user\pratik> aws s3 ls (/aws s3api list_bucket) 
+        =to see account S3 bucket's (acl_bucket)
+ 
+     > C:\user\pratik> aws s3api get-bucket-versioning --bucket "bucket name"
+        = to see bucket versioning is enable or not . if not then first enable .
+
+     > C:\user\pratik> aws s3api put-bucket-versioning --bucket <bucket-name> --versioning-configuration 
+                       Status=Enabled,MFADelete=Enabled --mfa "arn:aws:iam::<accountidnumber>:mfa/root-account-mfa-device <000000>"
+        =it will enable your MFA delete versioning.(if no error show its succesfull enabled)
+
+     > C:\user\pratik> aws s3api put-bucket-versioning --bucket <bucket-name> --versioning-configuration 
+                       Status=Enabled,MFADelete=Disabled --mfa "arn:aws:iam::<accountidnumber>:mfa/root-account-mfa-device <000000>"
+       =it will disable your MFA delete versioning.(if no error show its succesfull disabled)

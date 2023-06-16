@@ -1,0 +1,25 @@
+||*|| Private key lost ||*||
+
+
+ -  go to volume -> detach the volume of lost key Ec2 instance 
+
+ -  create new EC2 inst with new Key-pair 
+
+ -  go to volume -> attache the lost key EC2 instance volume to the new EC2 inst 
+   
+   > connect new EC2 inst to cli 
+   > [root@192] lsblk     = to see extra volume attache or not.(copy the path of extra vol)
+   > [root@192] mkdir /mount     = creat directory for mount point
+   > [root@192] mount -o nouuid /dev/<xvdf1> /mount     = mount extra vol to /mount dir
+   > [root@192] cd ~/.ssh    = the new key pai is present here (lock).
+   > [root@192] cp <new public key> /mount/home/ec2use/.ssh/  = replace old public key with new public key. (by coping in extrs vol)
+   > [root@192] cd /mount/home/ec2user/.ssh    = see key is changed / updated with new private key
+   > [root@192] umount /dev/<xvdf1>   = unmount the extra vol
+   
+
+ -  go to console & detach extra vol from new EC2 inst
+
+ -  attach the old vol(detach from new EC2) to key lost EC2 instance 
+    >mounting location path = /dev/xvda (/dev/xvda is a root vol path)
+
+ -  open key lost EC2 inst & connect with new private key

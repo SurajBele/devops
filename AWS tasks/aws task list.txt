@@ -1,0 +1,44 @@
+1.LAMPSERVER using nginx instead of apache? *
+2.one bucket create on MFA? *
+3.Set the lifecycle rule on s3? *
+4.Mount s3 bucket on ec2?try to host website?*
+5.2-tier? *
+6.how to recover the ssh key when production server is running? *
+7.3 tier? *
+8.vpc peering? *
+9.Server migration on premises to cloud premises (linux/windows)? *
+10.host application wordpress,python,node.js?*
+11.Using ACM how to apply ssl on LB ?
+12.how multipart in s3 ? 
+13.cross region LB & cross vpc? *
+14.Databases migration on primises? 
+15.NLB configration SSL CERTIFICATE?
+16.How to make a tomcat deamon service?
+17.use ip based routing,failure policy under lb? *
+18.cross vpc with LB? *
+19.One vpc which is default services attach NACL,DHCP,RT? 
+20.Output in one files?
+21.LB of log generate & put in the s3 bucket ?
+22.Bluegreen Deployment? *
+23.Instead of using NAT Gateway use ec2 instance?****
+24.Autoscaling with LB? *
+25.host static web page through s3 bucket. *
+26.nginx as a load balancer. *
+27.copy s3 bucket object across diffrent aws account.*
+28.create AMI from a snapshot & then send it via cross account & cross region? *
+29.create instance from AMI? *
+30.How to get into index.html & without using vim & without giving permission?
+31.store log of load balancer in s3 bucket? 
+32.make a directory with name "2013 dec 12"? 
+33.Generate log for vpc? 
+34.Mount EBS on multiple instance ? *
+35.How many edge location can create in aws?
+36.open ssh use ssl certificate by nginx? 
+37.apply sqs & sns on autoscaling? *
+38. vpn configuration - site to site vpn *
+39. bucket replication with cross region & cross acc.? *
+40. 3tier with route53 by s3 and cloudfront (project) *
+41.Schedule instance start & stop.(using LAMBDA & CloudWatch) *
+42.Launch an instance using AWS cli.
+
+	

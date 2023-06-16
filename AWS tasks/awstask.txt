@@ -1,0 +1,177 @@
+--> how many user create one time and max user create in IAM
+       one time - 10 or changable and max user add - 5000
+
+--> 300 iam groups per account.
+
+--> You can assign IAM users to up to 10 groups.
+     You can also attach up to 10 managed policies to each group,
+     for a maximum of 120 policies (20-50 managed policies attached to the IAM user,
+     10 IAM groups, with 10 policies each).
+
+--> json custum limit 120 lines.
+
+--> learn about asume role, inline policy, encryption.
+
+--> fastest rigion - north vergenia
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+--> s3 bucket MFA delete versioning enable task (bucket over mfa)
+    a. must be on mfa and access key along with versioning enable.
+    b. below given commands enter in aws cli mode - 
+        1. aws configure
+           *default output format - json
+        2. aws s3api list-buckets 
+            (for list buckets)
+        3. aws s3api get-bucket-versioning --bucket "shubham.goutam"
+             (for view status enable or disable if disable goto the versioning and do enable)
+        4. aws s3api put-bucket-versioning --bucket shubham.goutam --versioning-configuration 
+           Status=Enabled,MFADelete=Enabled --mfa "arn:aws:iam::accountidnumber:mfa/root-account-mfa-device 000000"
+           (if no error show its succesfull enabled) 
+            *accountidnumber - account id 12 digit and 000000 - 6 digit authentication code
+
+--> youtube aws re-event for latest event. 
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+--> copy s3 bucket object across diffrent aws account
+     
+      a. source account side - 
+            1. create s3 bucket with public and versioning on
+            2. goto the permission section and attach json policy
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DelegateS3Access",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::888532361994:root"
+            },
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::shubham.goutam/*",
+                "arn:aws:s3:::shubham.goutam"
+            ]
+        }
+    ]
+}
+                          
+                     (in this json policy 888532361994 - destination account number 
+                        and shubham.goutam - source bucket name) replace according to you
+         
+        b. destination account side - 
+               1. create policy in IAM with json policy 
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::shubham.goutam",
+                "arn:aws:s3:::shubham.goutam/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket",
+                "s3:PutObject",
+                "s3:PutObjectAcl"
+            ],
+            "Resource": [
+                "arn:aws:s3:::kashish.crr",
+                "arn:aws:s3:::kashish.crr/*"
+            ]
+        }
+    ]
+}
+
+         (shubham.goutam - source bucket name and kashish.crr - destination bucket name) you can
+             change according to you (my policy name - s3syncpolicy)
+
+     2. add user and give programatic access (dow csv) and set permission s3syncpolicy
+     3. goto cli mod
+               -> aws configure 
+                  give access key and private key with default region 
+                  
+               -> aws s3 sync s3://shubham.goutam s3://kashish.crr
+                 or aws s3 sync s3://shubham.goutam s3://kashish.crr --source-region us-east-1 --region us-east-1
+
+          *cheak destination bucket you get source object also result show after last command*
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+--> s3 bucket cross region same account replication (just like backup in diffrent region)
+     a. just create two diffrent bucket with diffrent regions and must be versioning on 
+     b. source side bucket apply replication rule and its done.
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+--> s3 bucket cross account replication (just like iam user role for access bucket)
+     
+       a. source account side -
+         1. create bucket with object 
+         2. create a role for aws service as amazons3readonlyaccess just like testing,devlopment (my role name testing)
+         
+       b. destination account side - 
+         1. create a policy with this json policy or script -
+{
+    "Version": "2012-10-17",
+    "Statement": {
+        "Effect": "Allow",
+        "Action": "sts:AssumeRole",
+        "Resource": "arn:aws:iam::520842148501:role/testing"
+    }
+} 
+           
+          (arn:aws:iam::520842148501:role/testing - this is source acc side role ARN )
+           my policy name - s3cross
+         
+         2. then create iam user with policy permission s3cross. (my user name - s3user)
+         3. login s3user (destination iam user)
+         4. goto profile section (right top) then switch role (bottom left side)
+         5. enter in Account source account number and in role testing*
+         6. display name is automatically apear then click switch role.
+         7. now you can access source side bucket from destination iam user. 
+
+-----------------------------------------------------------------------------------------------------------------------------------------   
+
+--> mount s3 bucket on ec2 and try to host webpage(use sudo before every commond)
+
+    1. We need ec2 instance with linux and one bucket with public access enable.
+    2. Then with the help of ssh command we login instance in cli.
+    3. After login we can run some command-
+    4.Step-1:- yum update or yum update all
+    5. Step-2:- yum install automake fuse fuse-devel gcc-c++ git libcurl-devel libxml2-devel make openssl-devel
+    6. git clone https://github.com/s3fs-fuse/s3fs-fuse.git
+    7. cd s3fs-fuse
+    8.  ./autogen.sh
+    9.  ./configure --prefix=/usr --with-openssl
+    10.  make
+    11.  make install
+    12.  which s3fs
+    13.  touch /etc/passwd-s3fs
+    14.  vim /etc/passwd-s3fs ---> Your_accesskey:Your_secretkey
+    15.  chmod 640 /etc/passwd-s3fs
+    16. su - root 
+    16.  s3fs buckethostimage /mnt -o passwd_file=/etc/passwd-s3fs 
+        (its for mount and buckethostimage is my bucket and mount in /mnt directory)
+    17. df -h (here show you s3fs is mount in /mnt succesfully)
+    18. aws s3 ls (our bucket in aws account)
+    19.  cd /mnt
+    20. touch file{1..9} (its file reflected also in bucket)
+    21. With the help of wget we dow css template in bucket and then host by bucket host enable.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+--> 

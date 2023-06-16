@@ -1,0 +1,63 @@
+||*||Tomcat with Database , One tear ||*||
+
+ - launch RDS with (security 3306.8080)
+
+ - launch EC2 insta with public IP (3306,8080,22)
+
+ - take ssh of EC@
+   -> yum update -y
+   -> sudo yum install java-openjdk -y
+   -> sudo yum install mysql -y
+   -> sudo mysqul -h <RDS end-point> -u <username of RDS user> -p <password>
+   -> error 
+   -> go to RDS ->edit security group -> inbound rule ->romove existing & add new
+                                                   ->port=3306 source=SG of EC2 inst
+   -> cd /mnt
+   -> sudo wget <tomcat 8.0 link> -y
+   -> sudo unzip <apache zip file>
+   -> cd /apache-tomcat-8.
+   -> cd /bin
+   -> sudo chmod 744 catalina.sh (or +X)
+   -> sudo ./catlina.sh start
+      [go to googlr & check <public IP of EC@ :8080> - see tocat page show]
+   -> cd /apache-tom/webapps
+   -> sudo wget https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
+      [go to googlr & check <public IP of EC@ :8080/student> - see tocat page with student login page]
+   -> cd /mnt/apache/lib/
+   -> sudo wget https://s3-us-west-2.amazonaws.com/studentapi-cit/mysql-connector.jar
+   -> cd /apache/.conf
+   -> sudo vim contex.xml
+      write <content>
+            <Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource"
+           maxTotal="500" maxIdle="30" maxWaitMillis="1000"
+           username="<admin>" password="<Redhat$123>" driverClassName="com.mysql.jdbc.Driver"
+           url="jdbc:mysql://<db-instance.cntrdqrhemmy.ap-south-1.rds.amazonaws.com>:3306/studentapp?useUnicode=yes&amp;characterEncoding=utf8"/>  
+           
+           <content> 
+   -> sudo mysqul -h <RDS end-point> -u <username of RDS user> -p <password>  
+      [mysqi] - show databases ;
+      [mysqi] - crezte dztabase studentapp ;
+      [mysqi] - use database studentapp ;
+      [mysqi] - CREATE TABLE if not exists students(student_id INT NOT NULL AUTO_INCREMENT, 
+                student_name VARCHAR (100) NOT NULL, 
+                student_addr VARCHAR (100) NOT NULL, 
+                student_age VARCHAR (3) NOT NULL, 
+                student_qual VARCHAR (20) NOT NULL,
+                student_percent VARCHAR (10) NOT NULL,
+                student_year_passed VARCHAR (10) NOT NULL,
+                PRIMARY KEY (student_id));
+              =press ENTER
+     [mysqi] - desc <students> =show schama of table
+     [mysqi] - select * from <students> = show full table with values
+  -> cd /mnt/apache/bin
+  -> sudo ./catlina.sh stop
+  -> sudo ./catlina.sh start
+
+ - go to googlr & check <public IP of EC@ :8080/student> - see tocat page with student login page
+   ->insert valus & see it saves in Database 
+     
+
+    
+
+
+ 

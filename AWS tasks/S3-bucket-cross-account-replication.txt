@@ -1,0 +1,41 @@
+ ||*|| s3 bucket cross account replication (just like iam user role for access bucket) ||*||
+     
+       a. source account side -
+         1. create bucket with object 
+         2. create a role for aws service(name-s3role)
+            -> amazons3readonlyaccess (just like role name = testing/devlopment)
+         
+       b. destination account side - 
+         1. create a policy(name-s3cross) with this json policy or script -
+---------------------------------------------------------------------------------------
+{
+    "Version": "2012-10-17",
+    "Statement": {
+        "Effect": "Allow",
+        "Action": "sts:AssumeRole",
+        "Resource": "arn:aws:iam::520842148501:role/testing"
+    }
+} 
+
+   change="arn:aws:iam::520842148501:role/testing" - this is source acc side role ARN 
+------------------------------------------------------------------------------------------
+         
+         2. then create iam user (pratik) with policy permission s3cross(attach above policy).
+
+         3. login pratik (destination iam user)
+
+         4. goto profile section (right top) then switch role (bottom left side)
+
+         5. enter ->source account number & in role =s3role(source acc role name)
+
+         6. display name is automatically apear then click switch role.
+
+         7. now you can access source side bucket from destination iam user.
+
+Note- 1. if after this step switch role not performed then do some more step ---> 
+         
+      a. go to the source account side and open role(s3role) (those we create in first step)
+      b. then go to the trust relationship then after edit trust policy
+      c. then add a principle from below
+      d.  then select Principal type - iam users and ARN of iam user(pratik) from destination side.
+      e. after update policy you can access s3 bucket from switch role.

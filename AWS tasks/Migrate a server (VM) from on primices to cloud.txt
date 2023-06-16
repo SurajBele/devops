@@ -1,0 +1,69 @@
+||*|| Migrate a server (VM) from on primices to cloud ||*||
+
+ - Download AWS CLI & install on windows 
+   -> get access key & configure AWS account on Window CLI
+   -> test access
+      [c:\user\HP\Download] aws ec2 describe-regions
+
+ - create your iam role name should be vmimport with relavent permission
+   -> create a file ( trust-policy.json ) in window
+ ----------------------------------------------------------------
+{
+   "Version": "2012-10-17",
+   "Statement": [
+      {
+         "Effect": "Allow",
+         "Principal": { "Service": "vmie.amazonaws.com" },
+         "Action": "sts:AssumeRole",
+         "Condition": {
+            "StringEquals":{
+               "sts:Externalid": "vmimport"
+            }
+         }
+      }
+   ]
+}
+-------------------------------------------------------------------
+
+ - fire this commond on CLI to create role 
+   [c:\user\HP\Download] aws iam create-role --role-name vmimport --assume-role-policy-document "file://trust-policy.json"
+   =go to aws account & check the role "vmimport" is created
+  
+ - export the virtual machine (image of machine)
+   =go vo virtual machine & eport machin(file-export to OVF)
+ 
+ - create S3 bucket (vmbucket001) with (ACL,enable versioning) & uploade the exported VM file(image)
+ 
+ - go to iam role & attach policy 
+   =VMImportExportrole
+   =AdministratorAccess
+ 
+- create file (containers.json) in windows
+ ----------------------------------------------------------------
+ [
+  {
+    "Description": "My Server OVA",
+    "Format": "ova",
+    "UserBucket": {
+        "S3Bucket": "my-import-bucket",
+        "S3Key": "vms/my-server-vm.ova"
+    }
+  }
+]
+----------------------------------------------------------------
+
+ - cli fire command 
+   [c:\user\HP\Download] aws ec2 import-image --description "onprimicesVM" --disk-containers "file://containers.json"
+   output=it will take 10-12 min for complete
+------------------------------------
+   {
+    "StatusMessage": "pending"
+}
+------------------------------------
+
+ - go to AWS EC2 AIM there you can see the "imported-ami-000"
+   -> create EC2 instance using imported-ami (with-public IP & ssh.http port)
+
+ - take ssh of EC2 with username= root
+                        pass = 1234 (your vm password)
+  

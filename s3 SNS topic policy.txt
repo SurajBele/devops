@@ -1,0 +1,25 @@
+
+update SNS topic access policy
+
+
+
+{
+  "Version": "2008-10-17",
+  "Id": "__default_policy_ID",
+  "Statement": [
+    {
+      "Sid": "__default_statement_ID",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "*"
+      },
+      "Action": "SNS:Publish",
+      "Resource": "arn:aws:sns:ap-southeast-1:606583500697:cloudblitz",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:s3:::suraj123445"
+        }
+      }
+    }
+  ]
+}

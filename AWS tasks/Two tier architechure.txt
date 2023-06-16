@@ -1,0 +1,143 @@
+||*|| Two Tear Architecture ||*||
+
+--> In a two-tier architecture, the client is on the first tier. 
+    The database server and web application server reside on the same server machine, which is the second tier.
+
+* create vpc :
+    name : vpc-one : 10.0.0.0/16
+
+* create subnet :
+    name : public-subnet : 10.0.1.0/24 specify the AZ
+    name : private-subnet-1 : 10.0.2.0/24 specify the AZ
+    name : private-subnet-2 : 10.0.3.0/24 specify the AZ
+
+* create internet gateway :
+    name : igw-one
+    attach -> vpc-one
+
+* create nat gateway :  
+    name : nat-one
+    subnet : public-subnet #to give access of internet
+    connectivity type : public
+    elastic IP allocation ID : allocate elastic IP
+
+*create route table :
+    name : public-route -> associated : public-subnet -> route -> igw-one 0.0.0.0/0
+    name : private-route -> associated : private-subnet-1 & private-subnet-2 -> route -> nat-one 0.0.0.0/0
+
+* create RDS  - create database -> standard create -> mariaDB -> templates : free tier - DB instance identifier : database-1 
+    - Credentials Settings - Master username : admin - Master password : Admin$123 - Instance configuration : DB instance class : 
+    Burstable classes (includes t classes) -> uncheck Enable Storage autoscaling -> select vpc : vpc-one  
+    -> create new security group : one-SG [remember use this created security group while launching all instance] -> Additional configuration 
+    : Initial database name : studentapp -> uncheck enable encryption -> create database
+
+* create instances 1 public & 2 private
+    name : public-server
+    Key pair : onekey.pem
+    vpc : vpc-one 
+    subnet : public-subnet
+    Auto-assign public IP : enable
+    Select existing security group : one-SG
+
+    name : private-server-1
+    Key pair : onekey.pem
+    vpc : vpc-one 
+    subnet : private-subnet-1
+    Auto-assign public IP : disable
+    Select existing security group : one-SG
+
+    name : private-server-2
+    Key pair : onekey.pem
+    vpc : vpc-one 
+    subnet : private-subnet-2
+    Auto-assign public IP : disable
+    Select existing security group : one-SG
+
+*add below ports after create instance -> click on database -> click on Security VPC security groups -> inbound rule
+ 
+http 80
+mysql/aurora 3306
+custom tcp 8080
+ssh 22
+
+* create load balancer -> alb -> select vpc : vpc-one -> select created security group : one-SG -> create load balances
+* create target group -> name: target-one ->  Protocol : 8080 -> select created vpc -> select both private instances
+
+* open git-bash or connect with ssh
+ssh -i onekey.pem ec2-user@public-ip (public-subnet)
+    vim key.pem #select onekey.pem open with editior copy the data & paste into key.pem
+    chmod 700 key.pem
+    
+ssh -i key.pem ec2-user@private-ip (private-server-2) #use same prompt
+    #install tomcat only from below link (no updated version will work on with this project)
+    cd /mnt
+    wget https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.83/bin/apache-tomcat-8.5.83.tar.gz
+    tar -xvzf apache-tomcat-8.5.83.tar.gz
+
+    yum install java-1.8.0-openjdk-src.x86_64 -y
+
+    cd /mnt/apache-tomcat-8.5.83/webapps/
+    wget https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
+    cd /mnt/apache-tomcat-8.5.83/lib/
+    wget https://s3-us-west-2.amazonaws.com/studentapi-cit/mysql-connector.jar
+    cd /mnt/apache-tomcat-8.5.83/conf/
+    sudo vim context.xml
+            at line no.21->  exact below <Context>
+            <Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource"
+                            maxTotal="500" maxIdle="30" maxWaitMillis="1000"
+                            username="admin" password="Admin$123" driverClassName="com.mysql.jdbc.Driver"
+                            url="jdbc:mysql://database-1.cl77p3lwlrcp.us-east-1.rds.amazonaws.com:3306/studentapp?useUnicode=yes&amp;characterEncoding=utf8"/>       
+
+    sudo chmod +x bin/*
+    cd /mnt/apache-tomcat-8.5.83/bin/
+    ./catalina.sh stop
+    ./catalina.sh start
+   
+  yum install mariadb -y
+    mysql -h database-1.cl77p3lwlrcp.us-east-1.rds.amazonaws.com -u admin -p (if this command its not work so go to your security group and delete mysql 
+                                                                               port and again add it and make every port anywhere)
+    CREATE DATABASE studentapp;
+    use studentapp;
+        CREATE TABLE if not exists students(student_id INT NOT NULL AUTO_INCREMENT, 
+                student_name VARCHAR (100) NOT NULL, 
+                student_addr VARCHAR (100) NOT NULL, 
+                student_age VARCHAR (3) NOT NULL, 
+                student_qual VARCHAR (20) NOT NULL,
+                student_percent VARCHAR (10) NOT NULL,
+                student_year_passed VARCHAR (10) NOT NULL,
+                PRIMARY KEY (student_id));
+    describe students;
+    exit
+
+ssh -i key.pem ec2-user@private-ip (private-server-1) #use same prompt
+    #install tomcat only from below link (no updated version will work on with this project)
+    cd /mnt
+    wget https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.83/bin/apache-tomcat-8.5.83.tar.gz
+    tar -xvzf apache-tomcat-8.5.83.tar.gz
+
+    yum install java-1.8.0-openjdk-src.x86_64 -y
+
+    cd /mnt/apache-tomcat-8.5.83/webapps/
+    wget https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
+    cd /mnt/apache-tomcat-8.5.83/lib/
+    wget https://s3-us-west-2.amazonaws.com/studentapi-cit/mysql-connector.jar
+    cd /mnt/apache-tomcat-8.5.83/conf/
+    sudo vim context.xml
+            at line no.21->  exact below <Context>
+            <Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource"
+                            maxTotal="500" maxIdle="30" maxWaitMillis="1000"
+                            username="admin" password="Admin$123" driverClassName="com.mysql.jdbc.Driver"
+                            url="jdbc:mysql://database-1.cl77p3lwlrcp.us-east-1.rds.amazonaws.com:3306/studentapp?useUnicode=yes&amp;characterEncoding=utf8"/>       
+
+    cd /mnt/apache-tomcat-8.5.83/bin/
+    ./catalina.sh stop
+    ./catalina.sh start
+
+ 
+
+Now go and copy load balancer DNS and hit on new tab 
+With /student 
+ ex: (load-arch-2083084599.us-east-2.elb.amazonaws.com/student)
+
+ * fill the data 
+ * check data entered in database

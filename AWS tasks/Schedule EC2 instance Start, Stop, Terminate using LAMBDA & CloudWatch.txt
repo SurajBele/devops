@@ -1,0 +1,60 @@
+||*|| Schedule EC2 instance Start, Stop, Terminate using LAMBDA CloudWatch ||*||
+
+1) create EC2 instance with public/private sub 
+
+2) create IAM role(EC2-sst)  using following policy
+   -> creste policy 
+      -name    (EC2access)
+      -service (EC2 -stsrtInstance,stopInstance,TerminateInstance)
+      -Resorces(specific -region of instance(us-east-1)
+                         -Instance ID )
+
+3) Go to LAMBDA (create 3 lambda function)
+   -> Name- i)StopEC2 ii)StartEC2 iii)TerminateEC2
+      Runtime- Python 3.7 (hello World Function)
+      Execution Role- use Ex. Role (EC2-sst)
+  Create Function
+    change code & deploy (you can check using test the code)
+-----------------------------------------------------------
+*Stop the instances:-
+import boto3
+region = 'us-west-1'
+instances = ['i-12345cb6de4f78g9h', 'i-08ce9b2d7eccf6d26']
+ec2 = boto3.client('ec2', region_name=region)
+
+def lambda_handler(event, context):
+    ec2.stop_instances(InstanceIds=instances)
+    print('stopped your instances: ' + str(instances))
+
+*Start the instances:-
+import boto3
+region = 'us-west-1'
+instances = ['i-12345cb6de4f78g9h', 'i-08ce9b2d7eccf6d26']
+ec2 = boto3.client('ec2', region_name=region)
+
+def lambda_handler(event, context):
+    ec2.start_instances(InstanceIds=instances)
+    print('started your instances: ' + str(instances))
+
+*Terminate the instances:-
+import boto3
+region = 'us-west-1'
+instances = ['i-12345cb6de4f78g9h', 'i-08ce9b2d7eccf6d26']
+ec2 = boto3.client('ec2', region_name=region)
+
+def lambda_handler(event, context):
+    ec2.terminate_instances(InstanceIds=instances)
+    print('terminated your instances: ' + str(instances))
+------------------------------------------------------------
+changes - rigion = 'put Ec2 Region'
+        - instances = ['Ec2 instance ID']
+
+4) Go to CloudWatch (create 3 rule)
+   -> event- create rule- Name i)StopEC2 ii)StartEC2 iii)TerminateEC2
+                        - select Schedule
+                        - cron expression [19 20 * * ? *] 
+                          (you have to schedule job using GMT time zone )
+                        - Target- function- i)StopEC2 ii)StartEC2 iii)TerminateEC2
+             configure...
+
+                                

@@ -1,0 +1,27 @@
+||*|| Mount s3 bucket on ec2 and try to host webpage ||*||
+
+(use sudo before every commond)
+
+    1. We need ec2 instance with linux and one bucket with public access enable.
+    2. Then with the help of ssh command we login instance in cli.
+    3. After login we can run some command-
+    4.Step-1:- yum update or yum update all
+    5. Step-2:- yum install automake fuse fuse-devel gcc-c++ git libcurl-devel libxml2-devel make openssl-devel
+    6. git clone https://github.com/s3fs-fuse/s3fs-fuse.git
+    7. cd s3fs-fuse
+    8.  ./autogen.sh
+    9.  ./configure --prefix=/usr --with-openssl
+    10.  make
+    11.  make install
+    12.  which s3fs
+    13.  touch /etc/passwd-s3fs
+    14.  vim /etc/passwd-s3fs ---> Your_accesskey:Your_secretkey
+    15.  chmod 640 /etc/passwd-s3fs
+    16. su - root 
+    16.  s3fs buckethostimage /mnt -o passwd_file=/etc/passwd-s3fs 
+        (its for mount and buckethostimage is my bucket and mount in /mnt directory)
+    18. df -h (here show you s3fs is mount in /mnt succesfully)
+    19. aws s3 ls (our bucket in aws account)
+    20.  cd /mnt
+    21. touch file{1..9} (its file reflected also in bucket)
+    22. With the help of wget we dow css template in bucket and then host by bucket host enable.

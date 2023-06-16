@@ -1,0 +1,19 @@
+#!/bin/bash
+sudo yum update -y
+sudo yum install java-openjdk -y
+cd /mnt
+sudo wget https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.84/bin/apache-tomcat-8.5.84.zip
+sudo unzip apache-tomcat-8.5.84.zip
+cd ./apache-tomcat-8.5.84/
+sudo chmod +x ./bin/*
+cd ./bin
+echo $PWD
+sudo ./catalina.sh start
+sudo wget https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
+sudo mv student.war /mnt/apache-tomcat-8.5.84/webapps/
+
+-----------------------------------------------------------------------------------------------
+
+wget https://s3-us-west-2.amazonaws.com/studentapi-cit/mysql-connector.jar (/mnt/apache/lib)
+yum install mysql -y
+mysql -h database-1.cbqg2cmmyt06.ap-south-1.rds.amazonaws.com -u admin -p

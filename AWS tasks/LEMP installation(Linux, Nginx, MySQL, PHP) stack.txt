@@ -1,0 +1,78 @@
+   ||*|| How To Install LEMP (Linux, Nginx, MySQL, PHP) stack On CentOS 7 ||*||
+
+    link-> https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-centos-7
+
+    1  sudo yum install epel-release
+    2  amazon-linux-extras install epel
+    3  sudo yum install nginx
+    4  sudo systemctl start nginx
+    5  sudo systemctl enable nginx
+    6  sudo yum install mariadb-server mariadb
+    7  sudo systemctl start mariadb
+    8  sudo mysql_secure_installation
+       =provide root password & yes to all conf
+    9  sudo systemctl enable mariadb
+   10  sudo yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+   11  yum --disablerepo="*" --enablerepo="remi-safe" list php[7-9][0-9].x86_64
+       Output
+       Loaded plugins: fastestmirror
+       Loading mirror speeds from cached hostfile
+       * remi-safe: mirrors.ukfast.co.uk
+Available Packages
+php70.x86_64                                              2.0-1.el7.remi                                       remi-safe
+php71.x86_64                                              2.0-1.el7.remi                                       remi-safe
+php72.x86_64                                              2.0-1.el7.remi                                       remi-safe
+php73.x86_64                                              2.0-1.el7.remi                                       remi-safe
+php74.x86_64                                              1.0-3.el7.remi                                       remi-safe
+php80.x86_64                                              1.0-3.el7.remi 
+   12  sudo yum-config-manager --enable remi-php74
+   13  sudo yum install php php-mysqlnd php-fpm
+   14  php --version
+   15  sudo vim /etc/php-fpm.d/www.conf
+       ->changes
+         ; RPM: apache user chosen to provide access to the same directories as httpd
+           user = nginx (old=apache)
+         ; RPM: Keep a group allowed to write in log dir.
+           group = nginx (old=apache)
+         listen = /var/run/php-fpm/php-fpm.sock;  (old=127.34.2.8:6060)
+         listen.owner = nginx
+         listen.group = nginx
+         listen.mode = 0660
+   16  sudo systemctl start php-fpm
+   17  sudo vim /etc/nginx/conf.d/default.conf
+       -> write
+======================================================================
+ server {
+    listen       80;
+    server_name  <server_domain_or_IP>;      ------->put public IP of EC2
+
+    root   /usr/share/nginx/html;
+    index info.php index.php index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+    error_page 404 /404.html;
+    error_page 500 502 503 504 /50x.html;
+    
+    location = /50x.html {
+        root /usr/share/nginx/html;
+    }
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_pass unix:/var/run/php-fpm/php-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+  }
+=========================================================================
+   18  sudo systemctl restart nginx
+   19  vim /usr/share/nginx/html/info.php
+       -> write
+         <?php
+
+           phpinfo();
+   - hit this = http://server_host_or_IP/info.php
+   

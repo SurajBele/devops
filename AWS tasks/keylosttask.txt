@@ -1,0 +1,45 @@
+-------------------key lost task---------------------
+
+Steps - Initial Setup
+
+1. Launch two Amazon Linux ec2 instances with t2.micro, Public IP enabled And Same Avaibility Zone.
+
+2. Ensure that both instances use different AWS Keypairs
+
+3. Enable port 22 for SSH on the both instances
+
+4. Name Instance 1 as server Instance and its attached Root EBS volume as sever Volume
+
+5. Name Instance 2 as client Instance and its attached Root EBS volume as client Volume
+
+Note-lets assume that we have lost the private key for our client Instance.
+
+Steps -
+
+1. Stop your client EC2 (client) instance
+
+2. Detach the Root volume from the client instance
+
+3. Attach client Volume to the server instance (insure that your server instance is start)
+
+4. connect your server instance or take ssh.
+
+5. Isblk --> cheake your volumes
+
+6. sudo mkdir /mnt/tempvol
+
+7. sudo mount -o nouuid /dev/xvdf1 /mnt/tempvol
+   (xvdf1 is your client volume name in server instance)
+
+8. cp ~/.ssh/authorized_keys /mnt/tempvol/home/ec2-user/.ssh/authorized_keys
+
+9. sudo cd /mnt/tempvol/home/ec2-user/.ssh  --> for confirmation key copy or not
+
+10. sudo umount /mnt/tempvol
+
+11. Detach the client volume from the server instance
+
+12. Re-attach the client volume to the client instance as the root volume
+    (must asure that when attach root volume give name xvda )
+
+13. Start the Original instance and connect to the Original instance using the key pair of your server instance

@@ -1,0 +1,68 @@
+*task*:- ELB (elastic load balancer) dump into S3 bucket
+
+link= https://www.tothenew.com/blog/elb-logs-on-s3-bucket/
+
+1) create normal bucket -> edit properties = enable Server acess logging
+   -> edit permission = edit bucket policy 
+-----------------------------------------------------------------------------------------------------
+{
+    "Version": "2012-10-17",
+    "Id": "AWSConsole-AccessLogs-Policy-1669877868305",
+    "Statement": [
+        {
+            "Sid": "AWSConsoleStmt-1669877868305",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::<127311923021>:root"
+            },
+            "Action": "s3:PutObject",
+            "Resource": "<arn:aws:s3:::pk.ok>/AWSLogs/141264789636/*"
+        },
+        {
+            "Sid": "AWSLogDeliveryWrite",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "delivery.logs.amazonaws.com"
+            },
+            "Action": "s3:PutObject",
+            "Resource": "<arn:aws:s3:::pk.ok>/AWSLogs/141264789636/*",
+            "Condition": {
+                "StringEquals": {
+                     "s3:x-amz-acl": "bucket-owner-full-control"
+                }
+            }
+        },
+        {
+            "Sid": "AWSLogDeliveryAclCheck",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "delivery.logs.amazonaws.com"
+            },
+            "Action": "s3:GetBucketAcl",
+            "Resource": "<arn:aws:s3:::pk.ok>"
+        }
+    ]
+}
+
+# change in jeson script 
+ <12324524212> = ELB rigion ID
+ <arn:aws:s3:::pk.ok> = arn of bucket
+-----------------------------------------------------------------------------------------
+2) goto load balancer -> attribute = edit attribute -> monitaring
+   -> acess logs(turn onn) -> select S3 bucket -> save changes(chesck S3 it will show AWS log folder)
+
+NOTE - in old console you can create new S3 bucket for ELB logs from ELB
+
+
+
+
+
+
+
+
+
+
+
+
+
+

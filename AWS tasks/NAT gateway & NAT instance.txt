@@ -1,0 +1,51 @@
+||*|| NAT gateway & NAT instance ||*||
+
+#NAT gateway
+
+ - create 2 subnet in same VPC-1 ( 1-public 1-private)
+
+ - create IG internet gateway.attached with VPC-1
+ 
+ - create pub-rout table & associate with pub-subnet & rout with IG internet getway.
+
+ - create nat gateway.(create in pub-subnet work for privet sub)
+ 
+ - create privet-rout table & associate with privet-subnet & rout with NAT getway.
+
+ - create 1 EC2 server in pub-subnet & allow public IP. (in SG= allow ssh,http,all ICMP IPv4 ports)
+  
+ - create 1 EC2 server in prive-subnet &  don't allow public IP.
+ 
+ - open pub-EC2 with the help of ssh & ping private Ec2 with ( # ping <private EC2 IP> )
+    (it is ping because of in same VPC)
+   ->take ssh of private-EC2 from pub EC2 (ssh -i <private key> ec2-user<private IP>)
+   ->ping 8.8.8.8 (internet check)
+     If it ping it means your NAt getway works
+
+=======================================================================================================
+
+#NAT instance
+
+ - create 2 subnet in same VPC-1 ( 1-public 1-private)
+
+ - create IG internet gateway.attached with VPC-1
+ 
+ - create pub-rout table & associate with pub-subnet & rout with IG internet getway.
+
+ - create NAT instance in pub-subnet.
+   ->launch inst -browse AMI -Community AMI -search nat -select first AMI -enable pub IP
+ 
+ - create privet-rout table & associate with privet-subnet & rout with NAT instance.
+
+ - create 1 EC2 server in pub-subnet & allow public IP. (in SG= allow ssh,http,all ICMP IPv4 ports)
+  
+ - create 1 EC2 server in prive-subnet &  don't allow public IP.
+ 
+ - open pub-EC2 with te help of ssh & ping private Ec2 with ( # ping <private EC2 IP> )
+    (it is ping because of in same VPC)
+   ->take ssh of private-EC2 from pub EC2 (ssh -i <private key> ec2-user<private IP>)
+   ->ping 8.8.8.8 (internet check)
+     If it ping it means your NAt inst works
+ 
+ - if not :
+   ->go to NAT EC@ inst -Action -Networking -change source/dest chsnge -stop[*] & save.

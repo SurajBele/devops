@@ -1,0 +1,29 @@
+1. 1 vpc create
+2. 4 subnet ---> 2 public (with diffrent AZ ex. a & b )
+            ---> 2 private (with diffrent AZ ex. a & b )
+3. 2 route table ---> private route table --> associate with both private subnet --> route edit with NAT gateway
+                 ---> public route table --> associate with both public subnet --> route edit with INTERNET GATEWAY
+4. rds create with same vpc and security group (attach with private)
+5. create instance --->
+                  a. 1st instance is jump server with public ip
+                  b. 2nd & 3rd instance is created with tomcat script in user data as a private instance
+                  c. 4th instance is created with nginx script in user data as a public instance
+6. private key send in jump server for loging private instance (scp -i) 
+7. take ssh 2nd instance with the help of jump server --->
+                   a. install mariadb ---> sudo yum install mysql -y
+                   b. create database and table in database
+                   c. download mysql connector.jar in /mnt/apache-tomcat/lib
+                   ---> wget https://s3-us-west-2.amazonaws.com/studentapi-cit/mysql-connector.jar
+                   d. some data put in configure file in /mnt/apache-tomcat/conf 
+                      --> vim context.xml  (given in tomcat-rdsdata.txt)
+                   e. then stop and start ./catalina.sh (/bin)
+8. again take ssh of 3rd private instance from jump server and doing step 7 - c, d & e. 
+9. create load balencer with a public subnet and create target group of private subnet
+     listenar-80 and target group port-8080
+10. then hit the load balencer DNS in browser and /student.war
+
+11. connect with 4th public instance
+                   a. remove all the files in the /usr/share/nginx/html
+                   b. vim index.html and put the data of file nginx LB.txt and edit DNS
+12. hit the public IP of 4th instance.  
+                   
