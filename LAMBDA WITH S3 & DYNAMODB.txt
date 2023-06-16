@@ -1,11 +1,13 @@
-1. create a IAM ROLE with DynamoDB full accesss
+1. create a IAM ROLE for Lambda of DynamoDB full accesss
 
 2. create a bucket with a globally unique name
 
 3. go to Lambda service and create a function with any name and attach existing IAM role created
    a. go to code edit all existing code and deploy following code 
+
+runtime --python-3.6
   
-   import boto3
+import boto3
 from uuid import uuid4
 def lambda_handler(event, context):
     s3 = boto3.client("s3")
