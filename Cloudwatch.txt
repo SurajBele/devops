@@ -1,0 +1,161 @@
+===================
+Cloudwatch 
+====================
+region specefic
+----------------------
+
+========================================
+Create Coustom matrics for memory and disk utilizations
+Packages
+==========
+sudo yum install perl-Switch perl-DateTime perl-Sys-Syslog perl-LWP-Protocol-https perl-Digest-SHA --enablerepo="rhui-REGION-rhel-server-optional" -y 
+sudo yum install zip unzip
+--------------------------------------------------
+cloudwatch agent memory utilization script
+==========================================
+curl https://aws-cloudwatch.s3.amazonaws.com/downloads/CloudWatchMonitoringScripts-1.2.2.zip -O
+
+-----------------------------------------------------
+unzip it
+---------------------
+unzip CloudWatchMonitoringScripts-1.2.2.zip && \
+rm CloudWatchMonitoringScripts-1.2.2.zip && \
+cd aws-scripts-mon
+-----------------------------
+run with options
+-------------------------
+./mon-put-instance-data.pl --mem-util ------for memory utilization
+
+./mon-put-instance-data.pl --disk-space-util --disk-path=/
+
+-----------------------------------------------------------
+now there are 2 namespace we will see in cloudwatch
+
+we need to run script every time to see the status,
+
+for that we can shedule it to run on perticular time
+
+set crontab
+
+ * * * * * /root/aws-scripts-mon/mon-put-instance-data.pl --mem-util
+
+# systemctl restart crond
+
+this crontab run the script every minute and we will get updated data in cloudwatch
+
+
+=========================================
+Log Monitoring
+=========================================
+access_log_group -- create in cloudwatch
+
+retaintion setting -----how longs your logs can stored.
+
+create server and having httpd running 
+
+user data
+
+#!/bin/bash
+sudo yum install httpd -y
+systemctl start httpd
+systemctl enable httpd
+echo " <h1> This is Home page $HOSTNAME </h1> " > /var/www/html/index.html
+---------------
+
+or we can create new file after lounching instance
+
+vi web.sh
+
+#!/bin/bash
+sudo yum install httpd -y
+systemctl start httpd
+systemctl enable httpd
+echo " <h1> This is Home page $HOSTNAME </h1> " > /var/www/html/index.html
+
+run the file
+
+chmod +x web.sh
+
+./web.sh
+
+or 
+
+bash web.sh
+
+systemctl status httpd
+----------------
+
+check logs
+
+ls /var/log/httpd
+
+access_logs and error_logs
+
+hit httpd from chrome
+
+access log generated
+
+
+cat /var/log/httpd/access_logs
+--------------------------------
+
+now push logs in cloudwatch service
+
+use cloudwatch agent for that
+
+for that assign IAM role of full cloudwatch access to instance
+
+curl https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py -O
+
+file
+
+sudo python ./awslogs-agent-setup.py --region us-east-1-------dependences
+
+
+Do configuration
+
+
+aws access key ---
+aws secrete key---    set refoult
+region------------
+output format-----
+
+now give path of logs here which logs you wants to push on cloudwath
+
+path of logs file to upload: /var/logs/httpd/access_log
+
+destination Log group name : access_log_group     ----cloudwatch log group name or it will create new one
+
+
+log stream name:
+ 
+differentiate logs of different services with uniqe name
+
+set sorting 
+
+configuration file saved
+
+/var/awslogs/etc/awslogs.conf
+
+it install as daemon
+
+systemctl start awslogs
+
+systemctl enable awslogs
+
+
+now check cloudwatch ---we can see logs are generated in the log group access_logs
+
+
+
+
+
+
+
+
+
+
+
+
+
+

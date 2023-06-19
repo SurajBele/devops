@@ -1,0 +1,88 @@
+====================================================================================================
+					LAMBDA
+=====================================================================================================
+--------------------------------------------
+
+manual code
+===============================================
+
+# Backup all in-use volumes in all regions
+runtime --python-3.9
+
+import boto3
+
+def lambda_handler(event, context):
+    ec2 = boto3.client('ec2')
+    
+    # Get list of regions
+    regions = ec2.describe_regions().get('Regions',[] )
+
+    # Iterate over regions
+    for region in regions:
+        print "Checking region %s " % region['RegionName']
+        reg=region['RegionName']
+
+        # Connect to region
+        ec2 = boto3.client('ec2', region_name=reg)
+    
+        # Get all in-use volumes in all regions  
+        result = ec2.describe_volumes( Filters=[{'Name': 'status', 'Values': ['in-use']}])
+        
+        for volume in result['Volumes']:
+            print "Backing up %s in %s" % (volume['VolumeId'], volume['AvailabilityZone'])
+        
+            # Create snapshot
+            result = ec2.create_snapshot(VolumeId=volume['VolumeId'],Description='Created by Lambda backup function ebs-snapshots')
+        
+            # Get snapshot resource 
+            ec2resource = boto3.resource('ec2', region_name=reg)
+            snapshot = ec2resource.Snapshot(result['SnapshotId'])
+        
+            volumename = 'N/A'
+        
+            # Find name tag for volume if it exists
+            if 'Tags' in volume:
+                for tags in volume['Tags']:
+                    if tags["Key"] == 'Name':
+                        volumename = tags["Value"]
+        
+            # Add volume name to snapshot for easier identification
+            snapshot.create_tags(Tags=[{'Key': 'Name','Value': volumename}])
+
+=======================================================================================================
+trigger based
+=====================
+
+1. create a IAM ROLE for Lambda of DynamoDB full accesss
+
+2. create a bucket with a globally unique name
+
+3. go to Lambda service and create a function with any name and attach existing IAM role created
+   a. go to code edit all existing code and deploy following code 
+
+runtime --python-3.6
+  
+import boto3
+from uuid import uuid4
+def lambda_handler(event, context):
+    s3 = boto3.client("s3")
+    dynamodb = boto3.resource('dynamodb')
+    for record in event['Records']:
+        bucket_name = record['s3']['bucket']['name']
+        object_key = record['s3']['object']['key']
+        size = record['s3']['object'].get('size', -1)
+        event_name = record ['eventName']
+        event_time = record['eventTime']
+        dynamoTable = dynamodb.Table('newtable')
+        dynamoTable.put_item(
+            Item={'unique': str(uuid4()), 'Bucket': bucket_name, 'Object': object_key,'Size': size, 'Event': event_name, 'EventTime': event_time})
+    
+   b. go to test and create a new sharable event
+
+   c. go to trigger attch s3 bucket created above 
+
+4. go to DynamoDB service and create a table and unique id with same name wriiten on python script above
+
+5. upload any file on s3 bucket created .. same file shown in DynamoDB table
+
+
