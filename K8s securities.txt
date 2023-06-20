@@ -1,0 +1,154 @@
+client certificate for user
+
+key - 
+request 
+crt certificate
+
+generate key for user
+
+-
+1-create directory 
+
+# mkdir cert
+
+2-create client certificate for user to authenticate 
+
+create key for user to authenticate
+
+# openssl genrsa -out cbz.key 2048
+
+3- create certificate request for key for user 
+
+# openssl req -new -key cbz.key -out cbz.csr
+
+country name: IN
+state : MH
+city : nagpur
+domain: cloudblitz
+department: dev
+user: cbz
+
+
+# ls cert
+
+we will see 
+cbz.csr
+cbz.key 
+for user cbz
+--------------------------------------------
+now validate client certificate using above key and request 
+
+# openssl x509 -req -in cbz.csr  -CA ~/.minikube/ca.crt -CA ~/.minikube/ca.key -out cbz.crt -days 365 -CAcreateserial
+
+
+ls cert
+
+cbz.cert 
+cbz.csr
+cbz.key
+-------------------------
+we have to configure it in kube config file 
+
+in kube config we have user profiles those are working on k8s cluster, and cluster info.
+
+#ls -a
+
+we will see .kube directory
+
+#cd .kube
+
+# kubectl config get-users
+
+here we see users
+
+# kubectl config get-context
+
+# cd cert
+---------------------
+cerate credentials for user cbz
+
+# kubectl config set-credentials cbz --client-certificate=cbz.cert --client-key=cbz.key
+
+#kubectl config get-users
+see new user cbz added
+
+now create profile for user cbz means context
+---------------------
+#kubectl config get-contexts
+
+# kubectl config set-context cbz --cluster minikube --user cbz
+
+#kubectl config get-contexts
+cbz
+minikube
+
+switch to user cbz
+------------------------
+
+# kubectl config use-context cbz
+
+# kubectl config get-contexts
+
+now user cbz is an active user
+
+check cbz able to do any work in cluster or not
+
+no permisstions assign to user cbz.
+-----------------------------------
+now create role for user cbz give access to pods
+------------------------
+role.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadate: 
+  name: my-role
+rules:
+  - apiGroups:
+    resources: ["pods"]
+    verbs: ["get", "watch", "cerate", "delete","patch" "list"]--------------actions
+
+to see verbs--means actions 
+
+# kubectl api-resources -o wide
+------------------------------------
+
+now bind this role with user cbz
+--------------------
+rolebinding.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: my-rb
+subjects:
+- kind: User
+  name: suraj
+  apiGroup: "rbac.authorization.k8s.io"
+roleRef:
+  kind: Role
+  name: myrole
+  apiGroup: "rbac.authorization.k8s.io"
+
+--------------------------------
+kubectl config use-context minikube
+
+# kubectl apply -f role.yaml
+# kubectl apply -f rolebinding.yaml
+
+# kubectl get roles
+
+# kubectl get rolebindings
+
+# kubectl describe my-role
+
+# kubectl describe rolebinding my-rb
+
+-------------------------------------
+# kubectl config use-context cbz
+
+# kubectl config current-context
+
+check again
+
+# kubectl get pods
