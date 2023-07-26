@@ -1,0 +1,39 @@
+*** installing jenkins ***
+
+1. sudo apt-get update
+
+2. sudo apt install openjdk-11-jre -y
+
+3. java -version
+
+4. curl -fsSL https://pkg.jenkins.io/debian/jenkins.io.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+5. sudo apt-get install jenkins
+
+6. sudo service jenkins start
+
+7. sudo service jenkins enable
+
+8. sudo service jenkins status --> jenkins is running
+
+9. ifconfig ---> show your ip and copy
+
+10. sudo -i 
+
+11. vim /etc/hosts ---> open and close no change
+
+12. echo "192.168.56.1 jenkins.local" >> /etc/hosts
+
+13. ping jenkins.local ---> automatic run your ip
+
+14. goto any browser & brows to --> http://localhost:8080
+
+15.when you ask your password then goto in ubantu and run
+ and then after copy password -->
+ cat /var/lib/jenkins/secrets/initialAdminPassword 
+
+16. after normal configration you use to jenkins. 
